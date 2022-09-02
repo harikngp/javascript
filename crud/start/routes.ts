@@ -21,6 +21,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.post('c','CrudsController.create')
+Route.post('i','CrudsController.insert')
 Route.get('r','CrudsController.read')
 Route.patch('u','CrudsController.update')
 Route.delete('d','CrudsController.delete')
+Route.post('j','CrudsController.join')
