@@ -4,12 +4,17 @@ import DepartmentValidator from 'App/Validators/DepartmentValidator'
 import Database from '@ioc:Adonis/Lucid/Database'
 export default class DepartmentsController {
     public async create({request}:HttpContextContract){
-        const val=await request.validate(DepartmentValidator)
-        const dept = new Department()
-        dept.id = val['id']
-        dept.name = val['name']
-        dept.shift=val['shift']
-        await dept.save()
+        try{
+        const value=await request.validate(DepartmentValidator)
+        const department = new Department()
+        department.id = value.id
+        department.name = value.name
+        department.shift=value.shift
+        await department.save()
+        }
+        catch{
+            return "Invalid input"
+        }
     }
 
     public async read(){
@@ -17,17 +22,27 @@ export default class DepartmentsController {
     }
 
     public async update({request}:HttpContextContract){
+        try{
         const val=await request.validate(DepartmentValidator)
         const column=await Department.findOrFail(request.input('id'))
         column.name = val.name
         column.shift = val.shift
         await column.save()
+        }
+        catch{
+            return "Invalid input: Not updated"
+        }
     }
         
     public async delete({request}:HttpContextContract){
+        try{
         const column=await Department.findOrFail(request.input('id'))
         column.delete()
-        await column.save()   
+        await column.save()
+        }
+        catch{
+            return "Invalid ID"
+        }   
     }
 
     public async join() {
@@ -38,7 +53,12 @@ export default class DepartmentsController {
     }
 
     public async getInfo({request}:HttpContextContract){
+        try{
         const team=await Department.findOrFail(request.input('id'))
         return team
+        }
+        catch{
+            return "Invalid ID"
+        }
     }
 }

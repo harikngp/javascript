@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+
 Route.group(()=>{
   Route.post('createEmp','EmployeesController.create')
   Route.get('readEmp','EmployeesController.read')
@@ -36,4 +37,3 @@ Route.group(()=>{
   Route.post('joinDept','DepartmentsController.join')
   Route.post('infoDept','DepartmentsController.getInfo')
 }).middleware('dept')
-Route.post('join','.join')
