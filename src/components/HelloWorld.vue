@@ -1,58 +1,209 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+  <v-app>
+    <v-form 
+      ref="form" 
+      v-model="valid" 
+      lazy-validation>
+      
+    <v-dialog v-model="dialog" width="750" color="white">
+    <template v-slot:activator="{ on, attrs }">
+      <v-flex text-right align-right>
+        <v-btn
+          color="primary"
+          v-bind="attrs"
+          v-on="on"
+        >
+        <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-flex>
+      </template>
+      <v-card class="white">
+    <v-text-field 
+      v-model="name" 
+      :rules="nameRules"  
+      label="Name" 
+      required>
+      Name
+    </v-text-field>
+
+    <h3>Gender</h3>
+    <v-radio-group 
+      v-model="gender"
+      row>
+      <v-radio label="male" value="Male"></v-radio>
+      <v-radio label="female" value="Female"></v-radio>
+    </v-radio-group>
+
+    <h3>Hobbies</h3>
+    <v-checkbox 
+      v-model="hobbies"
+      v-for="(i) in interest" 
+      :key="i.id" 
+      :label="i.name"
+      :value="i.name"
+      required
+      :rules="[v=>!!v || 'required']">
+    </v-checkbox>
+
+    <v-autocomplete
+      v-model="city" 
+      :items="location"
+      :rules="[v => !!v || 'required']"
+      label="City" 
+      required>
+    </v-autocomplete> 
+
+    <v-text-field 
+      v-model="email" 
+      :rules="emailRules" 
+      label="Email"
+      required>
+    </v-text-field>
+
+    <v-text-field 
+      v-model="phone" 
+      :rules="phoneRules" 
+      label="Phone Number" 
+      required>
+    </v-text-field>
+   
+    <v-btn 
+      :disabled="!valid" 
+      color="success" 
+      @click="validate"
+      v-if="!flag"
+      >
+      Submit
+    </v-btn>
+    <v-btn
+      v-model = 'button1'
+      :disabled="!valid"
+      color="success"
+      class="mr-4"
+      @click="updateItem"
+      v-if="flag">
+      Edit
+    </v-btn>
+  </v-card>
+</v-dialog>
+</v-form>
+
+<v-simple-table>
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Name </th>
+          <th scope="col">Gender</th>
+          <th scope="col">Hobbies</th>
+          <th scope="col">City</th>
+          <th scope="col">Email</th>
+          <th scope="col">Phone Number</th>
+          <th scope="col">Edit</th>
+          <th scope="col">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+         <tr
+          v-for="(item,name) in info" :key = "name">
+          <td>{{item.id}}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.gender }}</td>
+          <td>{{ item.hobbies }}</td>
+          <td>{{ item.city }}</td>
+          <td>{{ item.email }}</td>
+          <td>{{ item.phone }}</td>
+          <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
+          <td><v-btn @click="del(item)"><v-icon small>mdi-delete</v-icon></v-btn></td>
+        </tr>
+      </tbody>
+    </v-simple-table>
+</v-app>
 </template>
-
-<script>
+<script lang="ts">
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+     data: () => ({
+       valid: true,
+       id:0,
+       name: '',
+       nameRules: [
+         name=>!!name||'required',
+         v=>v.length>=3 && /^[a-zA-Z\s]+$/.test(v) || 'Invalid name',
+       ],
+       email: '',
+       emailRules: [
+         email => !!email || 'required',
+         v => /.+@.+\..+/.test(v) || 'Invalid',
+       ],
+       city:'',
+       location: [
+         'Chennai',
+         'Mumbai',
+         'Bangalore',
+         'Hyderabad',
+         'Delhi',
+         'Nagpur',
+       ],
+       phone:'',
+       phoneRules:[
+        phone=>!!phone || 'required',
+        v=>v.length>=7 && v.length<=13|| 'Invalid number',
+        v=> /^[0-9]+$/.test(v) || 'Not a number',
+      ],
+      interest: [{id:1,name:'Cricket'},{id:2,name:'Music'},{id:3,name:'Reading'},{id:4,name:'Others'}],
+      hobbies:[],
+      info:[],
+      tempObj: {}, 
+      flag: false,
+      dialog:false,
+     }),     
+      methods: {
+        
+        validate () {
+          if(this.$refs.form.validate()){
+          this.id++,
+          this.info.push({
+            id:this.id,
+            name : this.name,
+            gender :this.gender,
+            hobbies:this.hobbies,
+            city: this.city,
+            email : this.email,
+            phone: this.phone,
+          }),
+          this.dialog=false,
+          this.flag=false,
+          this.$refs.form.reset()
+          }
+          
+        },
+        edit(item) {
+        this.dialog = true
+        this.flag=true
+        this.tempObj = item
+        this.name = item.name
+        this.gender = item.gender
+        this.hobbies = item.hobbies
+        this.city = item.city
+        this.email = item.email
+        this.phone = item.phone
+      }, 
+      updateItem() {
+        this.$refs.form.validate()
+        let test = this.info.findIndex(temp => temp.id == this.tempObj.id)
+        this.info[test].name = this.name
+        this.info[test].gender =this.gender
+        this.info[test].hobbies= this.hobbies
+        this.info[test].city = this.city
+        this.info[test].email = this.email
+        this.info[test].phone = this.phone
+        this.flag=false
+        this.$refs.form.reset()
+        this.dialog=false
+      }, 
+        del(item){
+          this.edit = this.info.indexOf(item)
+          this.info.splice(this.edit, 1)
+        },
+     },
+   }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>

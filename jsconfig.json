@@ -6,14 +6,15 @@
     "moduleResolution": "node",
     "paths": {
       "@/*": [
-        "src/*"
+        "src/*",
       ]
     },
     "lib": [
       "esnext",
       "dom",
       "dom.iterable",
-      "scripthost"
-    ]
+      "scripthost",
+    ],
+    "jsx":"preserve",
   }
 }
