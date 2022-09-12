@@ -37,10 +37,10 @@
     <h3>Hobbies</h3>
     <v-checkbox 
       v-model="hobbies"
-      v-for="(i) in interest" 
-      :key="i.id" 
-      :label="i.name"
-      :value="i.name"
+      v-for="(hobby,i) in interest" 
+      :key="i" 
+      :label="hobby.name"
+      :value="hobby.name"
       required
       :rules="[v=>!!v || 'required']">
     </v-checkbox>
@@ -79,7 +79,6 @@
       v-model = 'button1'
       :disabled="!valid"
       color="success"
-      class="mr-4"
       @click="updateItem"
       v-if="flag">
       Edit
@@ -91,15 +90,15 @@
 <v-simple-table>
       <thead>
         <tr>
-          <th scope="col">Id</th>
-          <th scope="col">Name </th>
-          <th scope="col">Gender</th>
-          <th scope="col">Hobbies</th>
-          <th scope="col">City</th>
-          <th scope="col">Email</th>
-          <th scope="col">Phone Number</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
+          <th>Id</th>
+          <th>Name </th>
+          <th>Gender</th>
+          <th>Hobbies</th>
+          <th>City</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Edit</th>
+          <th>Delete</th>
         </tr>
       </thead>
       <tbody>
