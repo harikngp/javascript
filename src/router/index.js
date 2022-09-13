@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import getEmp from '@/components/getEmp.vue'
 import postEmp from '@/components/postEmp.vue'
 Vue.use(VueRouter)
 
@@ -10,11 +9,6 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
-  },
-  {
-    path: '/getEmp',
-    name: 'getEmp',
-    component: getEmp
   },
   {
     path: '/postEmp',

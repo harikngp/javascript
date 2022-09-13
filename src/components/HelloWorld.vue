@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-form 
+     <v-form 
       ref="form" 
       v-model="valid" 
       lazy-validation>
@@ -60,17 +60,17 @@
       required>
     </v-text-field>
 
-    <v-text-field 
+     <!-- <v-text-field 
       v-model="phone" 
       :rules="phoneRules" 
       label="Phone Number" 
       required>
-    </v-text-field>
+    </v-text-field>  -->
    
     <v-btn 
       :disabled="!valid" 
       color="success" 
-      @click="validate"
+      @click="create"
       v-if="!flag"
       >
       Submit
@@ -96,21 +96,19 @@
           <th>Hobbies</th>
           <th>City</th>
           <th>Email</th>
-          <th>Phone Number</th>
           <th>Edit</th>
           <th>Delete</th>
         </tr>
       </thead>
       <tbody>
          <tr
-          v-for="(item,name) in info" :key = "name">
+          v-for="(item,name) in db" :key = "name">
           <td>{{item.id}}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.gender }}</td>
           <td>{{ item.hobbies }}</td>
           <td>{{ item.city }}</td>
           <td>{{ item.email }}</td>
-          <td>{{ item.phone }}</td>
           <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
           <td><v-btn @click="del(item)"><v-icon small>mdi-delete</v-icon></v-btn></td>
         </tr>
@@ -119,21 +117,24 @@
 </v-app>
 </template>
 <script lang="ts">
-export default {
-     data: () => ({
+  import  Vue from "vue"
+  import axios from "axios"
+  import VueAxios from "vue-axios"
+  Vue.use(VueAxios,axios)
+  export default {
+      name:"HelloWorld",
+     data (){
+      return {
        valid: true,
-       id:0,
-       name: '',
+
        nameRules: [
          name=>!!name||'required',
          v=>v.length>=3 && /^[a-zA-Z\s]+$/.test(v) || 'Invalid name',
        ],
-       email: '',
        emailRules: [
          email => !!email || 'required',
          v => /.+@.+\..+/.test(v) || 'Invalid',
        ],
-       city:'',
        location: [
          'Chennai',
          'Mumbai',
@@ -142,37 +143,33 @@ export default {
          'Delhi',
          'Nagpur',
        ],
-       phone:'',
-       phoneRules:[
-        phone=>!!phone || 'required',
-        v=>v.length>=7 && v.length<=13|| 'Invalid number',
-        v=> /^[0-9]+$/.test(v) || 'Not a number',
-      ],
       interest: [{id:1,name:'Cricket'},{id:2,name:'Music'},{id:3,name:'Reading'},{id:4,name:'Others'}],
-      hobbies:[],
-      info:[],
+      db:undefined,
       tempObj: {}, 
       flag: false,
       dialog:false,
-     }),     
+     
+      id:null,
+      name:null,
+      gender:'',
+      hobbies:'',
+      city:'',
+      email:''
+      }
+     }, 
       methods: {
         
-        validate () {
-          if(this.$refs.form.validate()){
-          this.id++,
-          this.info.push({
-            id:this.id,
-            name : this.name,
-            gender :this.gender,
-            hobbies:this.hobbies,
-            city: this.city,
-            email : this.email,
-            phone: this.phone,
-          }),
-          this.dialog=false,
-          this.flag=false,
-          this.$refs.form.reset()
-          }
+        create() {
+          
+          Vue.axios.post('http://127.0.0.1:3333/createEmp',{
+                    id:this.id,
+                    name:this.name,
+                    gender:this.gender,
+                    hobbies:this.hobbies,
+                    city:this.city,
+                    email:this.email
+                }),
+          this.dialog=false
           
         },
         edit(item) {
@@ -203,6 +200,9 @@ export default {
           this.edit = this.info.indexOf(item)
           this.info.splice(this.edit, 1)
         },
-     },
+    },
+      mounted(){
+        Vue.axios.get('http://127.0.0.1:3333/readEmp').then((resp)=>this.db=resp.data)
+      },
    }
-</script>
+</script> -->
