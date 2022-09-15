@@ -1,14 +1,10 @@
 <template>
-    <div>
-      <div>
+  <v-app>
         <SearchBar :link="url" @search="searching"/>
-      </div>
-    <v-form 
-      ref="form" 
-      v-model="valid" 
-      lazy-validation>
-      
+ 
+    <v-form>
     <v-dialog v-model="dialog" width="750">
+      
   
     <template v-slot:activator="{ on, attrs }">
       <v-flex text-right align-right>
@@ -20,16 +16,17 @@
         </v-btn>
       </v-flex>
       </template>
-  
+    
+
     <v-card class="white">
     <v-text-field 
-      v-model="deptId"
+      v-model="department.deptId"
       label="id"
       required>
       Department Id
     </v-text-field>
     <v-text-field 
-      v-model="deptName" 
+      v-model="department.deptName" 
       :rules="nameRules"
       label="Name"
       required>
@@ -37,7 +34,7 @@
     </v-text-field>
   
     <v-text-field 
-      v-model="locaton"
+      v-model="department.location"
       label="location"
       required>
       Location
@@ -71,20 +68,21 @@
         </thead>
         <tbody>
             <tr v-for="(item,i) in info" :key="i">
-                <td>{{item.deptId}}</td>
-                <td>{{item.deptName | nametrim}}</td>
+                <td>{{item.dept_id}}</td>
+                <td>{{item.dept_name | nametrim}}</td>
                 <td>{{item.location}}</td>
                 <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
-                <td><v-btn @click="del(item.id)"><v-icon small>mdi-delete</v-icon></v-btn></td>
+                <td><v-btn @click="del(item.dept_id)"><v-icon small>mdi-delete</v-icon></v-btn></td>
             </tr>
         </tbody>
     </v-simple-table>
   </v-form>
-  </div>
+  </v-app>
   </template>
   
   <script>
-  
+    //import {read,create} from './test'
+    import editItem from './service/api'
     import Vue from "vue"
     import axios from"axios"
     import VueAxios from "vue-axios"
@@ -98,56 +96,55 @@
                   name => !!name || "required",
                   v => v.length >= 3 && /^[a-zA-Z\s]+$/.test(v) || "Invalid name",
               ],
+              dialog:false,
               flag: true,
               info: [],
+              department:{
+              deptId: "",
               deptName: "",
               location: "",
-              deptId: "",
+              },
               url:"http://127.0.0.1:3333/searchDept"
           };
       },
-      mounted() {
-          Vue.axios.get("http://127.0.0.1:3333/readDept").then((resp) => {this.info = resp.data,console.warn(resp.data)});
+      async mounted() {
+        //this.info= await read()
+        this.readDept()
       },
       methods: {
-          postEmp() {
-              Vue.axios.post("http://127.0.0.1:3333/createDept", {
-                 
-                  deptId: this.deptId,
-                  deptName: this.deptName,
-                  location: this.location,
-                  
-              }).then(() => {
-                  Vue.axios.get("http://127.0.0.1:3333/readDept").then((resp) => this.info = resp.data);
-              }),
-                  this.dialog = false;
-              this.flag = true;
+
+          async readDept(){
+            await Vue.axios.get("http://127.0.0.1:3333/readDept").then((resp) => { this.info=resp.data})
+          },
+          async postEmp() {
+            Vue.axios.post("http://127.0.0.1:3333/createDept",this.department)
+              //this.info=create(this.department)
+              this.dialog = false;
+              await this.readDept()
           },
           edit(item) {
               this.flag = false;
               this.dialog = true;
-              this.tempObj = item;
-              this.deptId = item.deptId;
-              this.deptName = item.deptName;
-              this.location = item.location;
-             
+              this.department={
+                deptId : item.dept_id,
+                deptName :item.dept_name,
+                location : item.location,
+              }
           },
           updateItem() {
-              Vue.axios.patch("http://127.0.0.1:3333/updateDept", {
-                  deptId: this.deptId,
-                  deptName: this.deptName,
-                  location: this.location,
-                  
-              }).then(() => {
-                  Vue.axios.get("http://127.0.0.1:3333/readDept").then((resp) => this.info = resp.data);
-              }),
-                  this.flag = true;
+              editItem(this.department)
+              this.readDept()
+              //Vue.axios.patch("http://127.0.0.1:3333/updateDept",this.department)
               this.dialog = false;
+              this.flag = true;
           },
+          // del(id) {
+          //   deleteItem(id)
+          //   this.readDept()
+          // },
           del(id) {
-              Vue.axios.delete(`http://127.0.0.1:3333/deleteDept/${id}`).then(() => {
-                  Vue.axios.get("http://127.0.0.1:3333/readDept").then((resp) => this.info = resp.data);
-              });
+            Vue.axios.delete(`http://127.0.0.1:3333/deleteDept/${id}`);
+            this.readDept()
           },
           searching(resp){
             this.info=resp.data

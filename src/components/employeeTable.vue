@@ -1,14 +1,9 @@
 <template>
-    <div>
-      <div>
-        <searchBar :link="url" @search="searching"/>
-      </div>
-      <div>
-    <v-form 
-      ref="form" 
-      v-model="valid" 
-      lazy-validation>
-      
+    <v-app>
+        <div>
+    <searchBar :link="url" @search="searching"/><br>
+    </div>
+    <v-form>
     <v-dialog v-model="dialog" width="750">
   
     <template v-slot:activator="{ on, attrs }">
@@ -23,6 +18,8 @@
       </template>
   
     <v-card class="white">
+    
+      
     <v-text-field 
       v-model="id"
       label="id"
@@ -65,8 +62,8 @@
       v-if="!flag">
       Edit
     </v-btn>
-  </v-card>
-  </v-dialog>
+</v-card>
+</v-dialog>
   <v-simple-table>
         <thead>
             <tr>
@@ -89,9 +86,8 @@
             </tr>
         </tbody>
     </v-simple-table>
-  </v-form>
-  </div>
-</div>
+</v-form>
+    </v-app>
   </template>
   
   <script>
@@ -105,8 +101,7 @@
       name: "employeeTable",
       data() {
           return {
-            valid:'',
-            dialog:true,
+            dialog:false,
               nameRules: [
                   name => !!name || "required",
                   v => v.length >= 3 && /^[a-zA-Z\s]+$/.test(v) || "Invalid name",

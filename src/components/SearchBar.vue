@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-text-field v-model="search" >
+        <v-text-field v-model="search">
             Search
         </v-text-field>
         <v-btn @click="searchbar">Search</v-btn>
