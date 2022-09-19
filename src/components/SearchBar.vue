@@ -7,7 +7,6 @@
     </div>
 </template>
 <script>
-   import api from './service/api'
     export default{
 
         name:"SearchBar",
@@ -24,8 +23,7 @@
 
         methods:{
             searchbar(){
-                api.post(this.link,{search:this.search})
-                .then((resp)=>{this.$emit('search',resp)})
+                this.$emit('search',{search:this.search})
             }
         },
     }

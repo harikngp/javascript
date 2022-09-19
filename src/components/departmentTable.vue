@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <SearchBar :link="link+'/searchDept'" @search="searching"/>
+    <SearchBar @search="searching"/>
    
-    <v-form v-model="popup" ref="form" lazy-validation>
+    <v-form  ref="form">
 
     <v-dialog v-model="dialog" width="750"> 
 
@@ -20,15 +20,14 @@
     <v-card class="white">
       <v-text-field 
         v-model="department.deptId"
-        label="id"
+        label="deptId"
         required>
         Department Id
       </v-text-field>
 
       <v-text-field 
-        v-model="department.deptName" 
-        :rules="nameRules"
-        label="Name"
+        v-model="department.deptName"
+        label="deptName"
         required>
         Department Name
       </v-text-field>
@@ -61,18 +60,16 @@
       <thead>
         <tr>
         <th>Id
-          <!-- <button @click="ascCheck('/ascDept','deptId')"><v-icon small>mdi-arrow-up</v-icon></button>
-          <button @click="descCheck('/descDept','deptId')"><v-icon small>mdi-arrow-down</v-icon></button> -->
-          <button @click="asc('/ascIdDept')"><v-icon small>mdi-arrow-up</v-icon></button>
-          <button @click="desc('/descIdDept')"><v-icon small>mdi-arrow-down</v-icon></button>
+          <button @click="asc('/ascDept',{item:'deptId'})"><v-icon small>mdi-arrow-up</v-icon></button>
+          <button @click="desc('/descDept',{item:'deptId'})"><v-icon small>mdi-arrow-down</v-icon></button> 
         </th>
         <th>Name
-          <button @click="asc('/ascNameDept')"><v-icon small>mdi-arrow-up</v-icon></button>
-          <button @click="desc('/descNameDept')"><v-icon small>mdi-arrow-down</v-icon></button>
+          <button @click="asc('/ascDept',{item:'deptName'})"><v-icon small>mdi-arrow-up</v-icon></button>
+          <button @click="desc('/descDept',{item:'deptName'})"><v-icon small>mdi-arrow-down</v-icon></button>
         </th>
         <th>Location
-          <button @click="asc('/ascLocationDept')"><v-icon small>mdi-arrow-up</v-icon></button>
-          <button @click="desc('/descLocationDept')"><v-icon small>mdi-arrow-down</v-icon></button>
+          <button @click="asc('/ascDept',{item:'location'})"><v-icon small>mdi-arrow-up</v-icon></button>
+          <button @click="desc('/descDept',{item:'location'})"><v-icon small>mdi-arrow-down</v-icon></button>
         </th>
         <th>Edit</th>
         <th>Delete</th>
@@ -100,21 +97,20 @@
 
     data() {
       return {
-        nameRules: [
-          name => !!name || "required",
-          v => v.length >= 3 && /^[a-zA-Z\s]+$/.test(v) || "Invalid name",
-        ],
         item:'',
         dialog:false,
         flag: true,
         info: [],
         department:{
-        deptId: "",
-        deptName: "",
-        location: "",
+          deptId: "",
+          deptName: "",
+          location: "",
         },
         link:process.env.VUE_APP_OFFICE,
       }
+    },
+    directive:{
+        
     },
 
     async mounted() {
@@ -129,13 +125,11 @@
       },
 
       async postDept() {
-        await this.$refs.form.reset()
         this.flag=true 
         this.dialog=true
-        await api.post(this.link+'/createDept',this.department).then((res)=>{this.info=res.data})
+        await api.post(this.link+'/createDept',this.department)
+        .then((res)=>{this.info=res.data})
         this.dialog = false;
-        this.$refs.form.reset()
-        this.flag=true
         await this.readDept()
       },
 
@@ -154,7 +148,6 @@
         .then((res)=>{this.info=res.data})
         this.dialog = false;
         await this.readDept(),
-        this.$refs.form.reset()
         this.flag = true;
       },
 
@@ -164,16 +157,16 @@
       },
 
       async searching(resp){
-        this.info=await resp.data
+        await api.post(this.link+'/searchDept',resp).then((res)=>{this.info=res.data})
       },
 
-      async asc(val){
-        await api.get(this.link+val)
+      async asc(val,item){
+        await api.post(this.link+val,item)
         .then((res)=>{this.info=res.data})
       },
 
-      async desc(val){
-        await api.get(this.link+val)
+      async desc(val,item){
+        await api.post(this.link+val,item)
         .then((res)=>{this.info=res.data})
       },
     },    

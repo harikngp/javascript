@@ -12,10 +12,10 @@ async function post(url,value){
     return await Vue.axios.post(url,value)
 }
 async function del(url){
-    await Vue.axios.delete(url)
+    return await Vue.axios.delete(url)
 }
 async function update(url,value){
-    await Vue.axios.patch(url,value)   
+   return await Vue.axios.patch(url,value)   
 }
 
 

@@ -1,9 +1,9 @@
 <template>
-    <v-app>
-        <div>
-    <searchBar :link="url" @search="searching"/><br>
-    </div>
-    <v-form>
+  <v-app>
+    <SearchBar @search="searching"/>
+
+    <v-form v-model="popup" ref="form" lazy-validation>
+
     <v-dialog v-model="dialog" width="750">
   
     <template v-slot:activator="{ on, attrs }">
@@ -15,90 +15,99 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-flex>
-      </template>
+    </template>
   
     <v-card class="white">
-    
-      
-    <v-text-field 
-      v-model="id"
-      label="id"
-      required>
-      Name
-    </v-text-field>
-    <v-text-field 
-      v-model="name" 
-      :rules="nameRules"
-      label="Name"
-      required>
-      Name
-    </v-text-field>
+      <v-text-field 
+        v-model="employee.id"
+        label="id"
+        required>
+        Name
+      </v-text-field>
+
+      <v-text-field 
+        v-model="employee.name" 
+        :rules="nameRules"
+        label="Name"
+        required>
+        Name
+      </v-text-field>
   
-    <v-text-field 
-      v-model="address"
-      label="address"
-      required>
-      Address
-    </v-text-field>
+      <v-text-field 
+        v-model="employee.address"
+        label="address"
+        required>
+        Address
+      </v-text-field>
     
-    <v-text-field 
-      v-model="deptId"
-      label="deptId"
-      required>
-      Department ID
-    </v-text-field>
+      <v-text-field 
+        v-model="employee.deptId"
+        label="deptId"
+        required>
+        Department ID
+      </v-text-field>
    
-    <v-btn 
-      color="success" 
-      @click="postEmp"
-      v-if="flag"
-      >
-      Submit
-    </v-btn>
-    <v-btn
-      v-model = 'button1'
-      color="success"
-      @click="updateItem"
-      v-if="!flag">
-      Edit
-    </v-btn>
-</v-card>
-</v-dialog>
-  <v-simple-table>
-        <thead>
-            <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Department ID</th>
-            <th>Edit</th>
-            <th>Delete</th>
+      <v-btn 
+        color="success" 
+        @click="postEmp"
+        v-if="flag">
+        Submit
+      </v-btn>
+
+      <v-btn
+        color="success"
+        @click="updateItem"
+        v-if="!flag">
+        Edit
+      </v-btn>
+    </v-card>
+    </v-dialog>
+    </v-form>
+
+    <v-simple-table>
+      <thead>
+        <tr>
+          <th>Id
+            <button @click="asc('/ascEmp',{item:'id'})"><v-icon small>mdi-arrow-up</v-icon></button>
+            <button @click="desc('/descEmp',{item:'id'})"><v-icon small>mdi-arrow-down</v-icon></button> 
+          </th>
+          <th>Name
+            <button @click="asc('/ascEmp',{item:'name'})"><v-icon small>mdi-arrow-up</v-icon></button>
+            <button @click="desc('/descEmp',{item:'name'})"><v-icon small>mdi-arrow-down</v-icon></button>
+          </th>
+          <th>Address
+            <button @click="asc('/ascEmp',{item:'address'})"><v-icon small>mdi-arrow-up</v-icon></button>
+            <button @click="desc('/descEmp',{item:'address'})"><v-icon small>mdi-arrow-down</v-icon></button>
+          </th>        
+          <th>Department ID
+            <button @click="asc('/ascEmp',{item:'deptId'})"><v-icon small>mdi-arrow-up</v-icon></button>
+            <button @click="desc('/descEmp',{item:'deptId'})"><v-icon small>mdi-arrow-down</v-icon></button>
+          </th>
+          <th>Edit</th>
+          <th>Delete</th>
         </tr>
-        </thead>
-        <tbody>
-            <tr v-for="item in info" :key="item.id">
-                <td>{{item.id}}</td>
-                <td>{{item.name | nametrim}}</td>
-                <td>{{item.address}}</td>
-                <td>{{item.dept_id}}</td>
-                <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
-                <td><v-btn @click="del(item.id)"><v-icon small>mdi-delete</v-icon></v-btn></td>
-            </tr>
-        </tbody>
+      </thead>
+      <tbody>
+        <tr v-for="item in info" :key="item.id">
+          <td>{{item.id}}</td>
+          <td>{{item.name | nametrim}}</td>
+          <td>{{item.address}}</td>
+          <td>{{item.dept_id}}</td>
+          <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
+          <td><v-btn @click="del(item.id)"><v-icon small>mdi-delete</v-icon></v-btn></td>
+        </tr>
+      </tbody>
     </v-simple-table>
-</v-form>
-    </v-app>
-  </template>
+  </v-app>
+</template>
   
-  <script>
-  
-    import Vue from "vue"
-    import axios from"axios"
-    import VueAxios from "vue-axios"
-    Vue.use(VueAxios,axios)
-  
+<script>
+
+    import api from './service/api'
+
     export default{
       name: "employeeTable",
+
       data() {
           return {
             dialog:false,
@@ -108,60 +117,76 @@
               ],
               flag: true,
               info: [],
-              id: "",
-              name: "",
-              address: "",
-              deptId: "",
-              url:"http://127.0.0.1:3333/searchEmp"
+              link:process.env.VUE_APP_OFFICE,
+              employee:{
+                id: "",
+                name: "",
+                address: "",
+                deptId: ""
+              },
           };
       },
-       mounted() {
-        Vue.axios.get("http://127.0.0.1:3333/readEmp").then((resp) => this.info = resp.data);
-    },
-      methods: {
-          postEmp() {
-              Vue.axios.post("http://127.0.0.1:3333/createEmp", {
-                  id: this.id,
-                  name: this.name,
-                  address: this.address,
-                  deptId: this.deptId
-              }).then(() => {
-                  Vue.axios.get("http://127.0.0.1:3333/readEmp").then((resp) => this.info = resp.data);
-              }),
-                  this.dialog = false;
-              this.flag = true;
-          },
-          edit(item) {
-              this.flag = false;
-              this.dialog = true;
-              this.tempObj = item;
-              this.id = item.id;
-              this.name = item.name;
-              this.address = item.address;
-              this.deptId = item.dept_id;
-          },
-          updateItem() {
-              Vue.axios.patch("http://127.0.0.1:3333/updateEmp", {
-                  id: this.id,
-                  name: this.name,
-                  address: this.address,
-                  deptId: this.deptId
-              }).then(() => {
-                  Vue.axios.get("http://127.0.0.1:3333/readEmp").then((resp) => this.info = resp.data);
-              }),
-                  this.flag = true;
-              this.dialog = false;
-          },
-          del(id) {
-              Vue.axios.delete(`http://127.0.0.1:3333/deleteEmp/${id}`).then(() => {
-                  Vue.axios.get("http://127.0.0.1:3333/readEmp").then((resp) => this.info = resp.data);
-              });
-          },
-          searching(resp){
-            console.log(resp)
-            this.info=resp.data
-            console.warn(resp.data)
-          }
+
+      async mounted() {
+        await this.readEmp()
       },
+
+    methods: {
+
+      async readEmp(){
+        await api.get(this.link+'/readEmp')
+        .then((res)=>{this.info=res.data})
+      },
+
+      async postEmp() {  
+        this.flag=true 
+        this.dialog=true
+        await api.post(this.link+'/createEmp',this.employee)
+        .then((res)=>{this.info=res.data})
+        this.dialog = false;
+        this.flag=true
+        await this.readEmp()
+        
+      },
+
+      edit(item) {
+        this.flag = false;
+        this.dialog = true;
+        this.employee={
+          id : item.id,
+          name : item.name,
+          address : item.address,
+          deptId : item.dept_id,
+        }
+      },
+
+      async updateItem() {
+        await api.update(this.link+'/updateEmp',this.employee)
+        .then((res)=>{this.info=res.data})
+        this.dialog = false;
+        await this.readEmp(),
+        this.flag = true;
+      },
+
+      async del(id) {
+        await api.del(this.link+'/deleteEmp/'+id)
+        await this.readEmp()
+      },
+
+      async searching(resp){
+        await api.post(this.link+'/searchEmp',resp)
+        .then((res)=>{this.info=res.data})
+      },
+
+      async asc(val,item){
+        await api.post(this.link+val,item)
+        .then((res)=>{this.info=res.data})
+      },
+
+      async desc(val,item){
+        await api.post(this.link+val,item)
+        .then((res)=>{this.info=res.data})
+      },
+    },
   }
   </script> 
