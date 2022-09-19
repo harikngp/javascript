@@ -11,6 +11,15 @@ Vue.filter('nametrim',function(value){
   else
     return value
 })
+Vue.directive('comma', {
+    componentUpdated(el,binding,vnode) {
+      binding.value=binding.value
+      .replace(/\D/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      vnode.context.employee.id = binding.value;
+    }
+  }
+)
 new Vue({
   vuetify,
   router,

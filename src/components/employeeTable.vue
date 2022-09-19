@@ -20,6 +20,7 @@
     <v-card class="white">
       <v-text-field 
         v-model="employee.id"
+        v-comma="employee.id"
         label="id"
         required>
         Name
