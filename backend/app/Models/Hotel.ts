@@ -6,7 +6,7 @@ export default class Hotel extends BaseModel {
   public id: number
 
   @column()
-  public owner: string
+  public manager: string
 
   @column()
   public buildingNo:number
@@ -22,4 +22,11 @@ export default class Hotel extends BaseModel {
 
   @column()
   public pincode:number
+
+  @column()
+  public email:string
+
+  @column()
+  public customerId:number
+
 }

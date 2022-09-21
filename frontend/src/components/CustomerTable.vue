@@ -1,7 +1,7 @@
 <template>
   <v-app>
       <SearchBar @search="searching"/>
-      <v-form>
+      <v-form required>
 
 <v-dialog v-model="dialog" width="750"> 
 
@@ -19,6 +19,7 @@
 <v-card class="white">
 <v-text-field 
   v-model="customer.id"
+  :rules="ruleId"
   label="id"
   required>
   Id
@@ -26,6 +27,7 @@
 
 <v-text-field 
   v-model="customer.name"
+  :rules="ruleName"
   label="name"
   required>
   Name
@@ -58,12 +60,14 @@
                       <button @click="asc('/customer/asc',{item:'name'})"><v-icon small>mdi-arrow-up</v-icon></button>
                       <button @click="desc('/customer/desc',{item:'name'})"><v-icon small>mdi-arrow-down</v-icon></button>
                   </th>
+                  <th>No. of branch</th>
               </tr>
           </thead>
           <tbody>
               <tr v-for="(item,i) in info" :key="i">
                   <td>{{item.id}}</td>
                   <td>{{item.name}}</td>
+                  <td>{{item.branch}}</td>
                   <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
                   <td><v-btn @click="del(item.id)"><v-icon small>mdi-delete</v-icon></v-btn></td>
               </tr>
@@ -84,8 +88,17 @@ export default {
           item:'',
           customer:{
               id:'',
-              name:''
-          }
+              name:'',
+              branch:'',
+          },
+          ruleId: [
+            id=>!!id|| 'required',
+            v=> /^[0-9]+$/.test(v) || 'Not a number'
+          ],
+          ruleName: [
+            name=>!!name||'required',
+            v=>v.length>0 || 'Invalid name'
+          ],
       }
   },
 
@@ -98,7 +111,7 @@ export default {
       async read(){
           await api.get(this.link+'/customer/read')
           .then((res)=>{
-              this.info=res.data,console.log(res)
+              this.info=res.data,console.log(res.data)
           })
       },
 

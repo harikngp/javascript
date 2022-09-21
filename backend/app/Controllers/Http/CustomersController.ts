@@ -1,14 +1,24 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
 import Customer from "App/Models/Customer"
+import CustomerValidator from 'App/Validators/CustomerValidator'
 export default class CustomersController {
-    public async create({request}){
+    public async create({request}:HttpContextContract){
+        const valid=await request.validate(CustomerValidator)
         const customer=new Customer()
-        customer.name=request.input('name')
+        customer.id=valid.id
+        customer.name=valid.name
         await customer.save()
+        return customer
     }
 
     public async read(){
-        return await Customer.query().orderBy('id','asc')
+        return await Database.from('customers')
+        .leftJoin('hotels','customers.id','hotels.customer_id')
+        .select('customers.*')
+        .count('hotels.customer_id as branch')
+        .groupBy('customers.id','customers.name')
+        .orderBy('customers.name','asc')
     }
 
     public async update({request}:HttpContextContract){

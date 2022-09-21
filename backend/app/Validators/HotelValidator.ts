@@ -24,12 +24,14 @@ export default class HotelValidator {
    *    ```
    */
   public schema = schema.create({
-    owner:schema.string(),
+    customerId:schema.number(),
+    manager:schema.string(),
     buildingNo:schema.number(),
     street:schema.string(),
     area:schema.string(),
     district:schema.string(),
-    pincode:schema.number()
+    pincode:schema.number(),
+    email:schema.string()
   })
 
   /**

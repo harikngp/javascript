@@ -17,26 +17,48 @@
 </template>
 
 <v-card class="white">
-  <!-- <v-text-field 
-    v-model="hotel.id"
-    label="id"
-    required>
-    Id
-  </v-text-field> -->
 
   <v-text-field 
-    v-model="hotel.owner"
-    label="owner"
+    v-model="hotel.customerId"
+    label="Customer Id"
     required>
-    Owner
   </v-text-field>
-<!-- 
+
   <v-text-field 
-    v-model="hotel.address"
-    label="address"
+    v-model="hotel.manager"
+    label="Manager Name"
     required>
-    Address
-  </v-text-field> -->
+  </v-text-field>
+
+  <v-text-field 
+    v-model="hotel.buildingNo"
+    label="Building number"
+    required>
+  </v-text-field>
+
+  <v-text-field 
+    v-model="hotel.street"
+    label="Street"
+    required>
+  </v-text-field>
+
+  <v-text-field 
+    v-model="hotel.area"
+    label="Area"
+    required>
+  </v-text-field>
+
+  <v-text-field 
+    v-model="hotel.district"
+    label="District"
+    required>
+  </v-text-field>
+
+  <v-text-field 
+    v-model="hotel.pincode"
+    label="Pincode"
+    required>
+  </v-text-field>
 
   <v-btn 
     color="success" 
@@ -61,18 +83,24 @@
                         <button @click="asc('/hotel/asc',{item:'id'})"><v-icon small>mdi-arrow-up</v-icon></button>
                         <button @click="desc('/hotel/desc',{item:'id'})"><v-icon small>mdi-arrow-down</v-icon></button>
                     </th>
-                    <th>Owner
-                        <button @click="asc('/hotel/asc',{item:'owner'})"><v-icon small>mdi-arrow-up</v-icon></button>
-                        <button @click="desc('/hotel/desc',{item:'owner'})"><v-icon small>mdi-arrow-down</v-icon></button>
+                    <th>Manager
+                        <button @click="asc('/hotel/asc',{item:'manager'})"><v-icon small>mdi-arrow-up</v-icon></button>
+                        <button @click="desc('/hotel/desc',{item:'manager'})"><v-icon small>mdi-arrow-down</v-icon></button>
                     </th>
                     <th>Address</th>
+                    <th>Email
+                      <button @click="asc('/hotel/asc',{item:'email'})"><v-icon small>mdi-arrow-up</v-icon></button>
+                      <button @click="desc('/hotel/desc',{item:'email'})"><v-icon small>mdi-arrow-down</v-icon></button>
+                    </th>
+                    <th>Owner</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item,i) in info" :key="i">
                     <td>{{item.id}}</td>
-                    <td>{{item.owner}}</td>
-                    <td>{{item.address}}</td>
+                    <td>{{item.manager}}</td>
+                    <td>{{`${item.building_no},${item.street},${item.area},${item.district}-${item.pincode}`}}</td>
+                    <td>{{item.email}}</td>
                     <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
                     <td><v-btn @click="del(item.id)"><v-icon small>mdi-delete</v-icon></v-btn></td>
                 </tr>
@@ -92,10 +120,14 @@
             flag:true,
             item:'',
             hotel:{
-                id:'',
-                owner:'',
-                
-                //address:''
+                manager:'',
+                customerId:'',
+                buildingNo:'',
+                street:'',
+                area:'',
+                district:'',
+                pincode:'',
+                email:''
             }
         }
     },
@@ -126,9 +158,15 @@
             this.flag = false;
             this.dialog = true;
             this.hotel={
-                id : item.id,
-                owner :item.owner,
-                address : item.address,
+              id:item.id,
+              manager:item.manager,
+              customerId:item.customer_id,
+              buildingNo:item.building_no,
+              street:item.street,
+              area:item.area,
+              district:item.district,
+              pincode:item.pincode,
+              email:item.email      
             }
         },
 
