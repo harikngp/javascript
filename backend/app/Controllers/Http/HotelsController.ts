@@ -36,8 +36,8 @@ export default class HotelsController {
                 const info=i.toJSON()
                 return {
                     ...info,
-                    name: info.$extras.name,
-                    address:info.$extras.address,
+                    name: i.$extras.name,
+                    address:i.$extras.address,
                 }
             })
         )
@@ -91,11 +91,11 @@ export default class HotelsController {
                 .orWhere('hotels.customer_id',search)
             }
             else{
-                query.whereILike('manager','%'+search+'%')
-                .orWhereILike('email','%'+search+'%')
-                .orWhereILike('street','%'+search+'%')
-                .orWhereILike('area','%'+search+'%')
-                .orWhereILike('district','%'+search+'%')
+                query.whereILike('hotels.manager','%'+search+'%')
+                .orWhereILike('hotels.email','%'+search+'%')
+                .orWhereILike('hotels.street','%'+search+'%')
+                .orWhereILike('hotels.area','%'+search+'%')
+                .orWhereILike('hotels.district','%'+search+'%')
             }
         })
         .then( data => 
@@ -103,8 +103,8 @@ export default class HotelsController {
                 const info=i.toJSON()
                 return {
                     ...info,
-                    name: info.$extras.name,
-                    address:info.$extras.address,
+                    name: i.$extras.name,
+                    address:i.$extras.address,
                 }
             })
         )
@@ -122,8 +122,8 @@ export default class HotelsController {
                 const info=i.toJSON()
                 return {
                     ...info,
-                    name: info.$extras.name,
-                    address:info.$extras.address,
+                    name: i.$extras.name,
+                    address:i.$extras.address,
                 }
             })
         )
@@ -141,8 +141,8 @@ export default class HotelsController {
                 const info=i.toJSON()
                 return {
                     ...info,
-                    name: info.$extras.name,
-                    address:info.$extras.address,
+                    name: i.$extras.name,
+                    address:i.$extras.address,
                 }
             })
         )

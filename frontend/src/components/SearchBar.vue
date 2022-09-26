@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-text-field v-model="search" :rules="v=>v.length>0 || 'required'" label="Search" @keyup="searchBar">
+        <v-text-field v-model="search"  label="Search" @keyup="searchBar">
             Search
         </v-text-field>
     </div>
