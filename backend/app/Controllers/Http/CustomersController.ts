@@ -1,8 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Database from '@ioc:Adonis/Lucid/Database'
 import Customer from "App/Models/Customer"
 import CustomerValidator from 'App/Validators/CustomerValidator'
 export default class CustomersController {
+    info=this.read()
     public async create({request}:HttpContextContract){
         const valid=await request.validate(CustomerValidator)
         const customer=new Customer()
@@ -13,12 +13,21 @@ export default class CustomersController {
     }
 
     public async read(){
-        return await Database.from('customers')
-        .leftJoin('hotels','customers.id','hotels.customer_id')
+        return await Customer.query()
+        .leftJoin('hotels','hotels.customer_id','customers.id')
         .select('customers.*')
         .count('hotels.customer_id as branch')
-        .groupBy('customers.id','customers.name')
-        .orderBy('customers.name','asc')
+        .groupBy('customers.id')
+        .orderBy('customers.id')
+        .then( data => 
+            data.map((i) => {
+                const info=i.toJSON()
+                return {
+                    ...info,
+                    branch: i.$extras.branch,
+                }
+            })
+        )
     }
 
     public async update({request}:HttpContextContract){
@@ -47,17 +56,63 @@ export default class CustomersController {
 
     public async search({request}:HttpContextContract){
         const search=request.input('search')
-        if(/^[0-9]/.test(search))
-            return Customer.query().where('id', search)
-        else
-            return Customer.query().where('name','ilike','%'+search+'%')
+        return await Customer.query()
+        .leftJoin('hotels','hotels.customer_id','customers.id')
+        .select('customers.*')
+        .count('hotels.customer_id as branch')
+        .groupBy('customers.id')
+        .orderBy('customers.id','asc')
+        .where((query)=>{ 
+            if(/^[0-9]/.test(search))
+                query.where('customers.id', search)
+            else
+                query.whereILike('name','%'+search+'%')
+        })
+        .then( data => 
+            data.map((i) => {
+                const info=i.toJSON()
+                return {
+                    ...info,
+                    branch: i.$extras.branch,
+                }
+            })
+        )
     }
 
     public async desc({request}:HttpContextContract){
-        return await Customer.query().orderBy(request.input('item'),'desc')
+        return await Customer.query()
+        .leftJoin('hotels','customers.id','hotels.customer_id')
+        .select('customers.*')
+        .count('hotels.customer_id as branch')
+        .groupBy('customers.id')
+        .orderBy(request.input('item'),'desc')
+        .then( data => 
+            data.map((i) => {
+                const info=i.toJSON()
+                return {
+                    ...info,
+                    branch: i.$extras.branch,
+                }
+            })
+        )
     }
 
     public async asc({request}:HttpContextContract){
-        return await Customer.query().orderBy(request.input('item'),'asc')
+        
+        return await Customer.query()
+        .leftJoin('hotels','customers.id','hotels.customer_id')
+        .select('customers.*')
+        .count('hotels.customer_id as branch')
+        .groupBy('customers.id')
+        .orderBy(request.input('item'),'asc')
+        .then( data => 
+            data.map((i) => {
+                const info=i.toJSON()
+                return {
+                    ...info,
+                    branch: i.$extras.branch,
+                }
+            })
+        )
     }
 }

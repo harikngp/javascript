@@ -60,6 +60,12 @@
     required>
   </v-text-field>
 
+  <v-text-field 
+    v-model="hotel.email"
+    label="Email"
+    required>
+  </v-text-field>
+
   <v-btn 
     color="success" 
     @click="create"
@@ -76,30 +82,34 @@
 </v-card>
 </v-dialog>
 </v-form>        
+
         <v-simple-table>
             <thead>
                 <tr>
                     <th>ID
-                        <button @click="asc('/hotel/asc',{item:'id'})"><v-icon small>mdi-arrow-up</v-icon></button>
-                        <button @click="desc('/hotel/desc',{item:'id'})"><v-icon small>mdi-arrow-down</v-icon></button>
+                        <button @click="sort('/hotel/asc',{item:'id'})"><v-icon small>mdi-arrow-up</v-icon></button>
+                        <button @click="sort('/hotel/desc',{item:'id'})"><v-icon small>mdi-arrow-down</v-icon></button>
                     </th>
                     <th>Manager
-                        <button @click="asc('/hotel/asc',{item:'manager'})"><v-icon small>mdi-arrow-up</v-icon></button>
-                        <button @click="desc('/hotel/desc',{item:'manager'})"><v-icon small>mdi-arrow-down</v-icon></button>
-                    </th>
-                    <th>Address</th>
-                    <th>Email
-                      <button @click="asc('/hotel/asc',{item:'email'})"><v-icon small>mdi-arrow-up</v-icon></button>
-                      <button @click="desc('/hotel/desc',{item:'email'})"><v-icon small>mdi-arrow-down</v-icon></button>
+                        <button @click="sort('/hotel/asc',{item:'manager'})"><v-icon small>mdi-arrow-up</v-icon></button>
+                        <button @click="sort('/hotel/desc',{item:'manager'})"><v-icon small>mdi-arrow-down</v-icon></button>
                     </th>
                     <th>Owner</th>
+                    <th>Address</th>
+                    <th>Email
+                      <button @click="sort('/hotel/asc',{item:'email'})"><v-icon small>mdi-arrow-up</v-icon></button>
+                      <button @click="sort('/hotel/desc',{item:'email'})"><v-icon small>mdi-arrow-down</v-icon></button>
+                    </th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item,i) in info" :key="i">
                     <td>{{item.id}}</td>
                     <td>{{item.manager}}</td>
-                    <td>{{`${item.building_no},${item.street},${item.area},${item.district}-${item.pincode}`}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{`${item.address.building_no}, ${item.address.street}, ${item.address.area}, ${item.address.district}-${item.address.pincode}`}}</td>
                     <td>{{item.email}}</td>
                     <td><v-btn @click="edit(item)"><v-icon small>mdi-pencil</v-icon></v-btn></td>
                     <td><v-btn @click="del(item.id)"><v-icon small>mdi-delete</v-icon></v-btn></td>
@@ -116,17 +126,20 @@
         return{
             link:process.env.VUE_APP_ASSESSMENT,
             info:[],
+            
             dialog:false,
             flag:true,
             item:'',
             hotel:{
                 manager:'',
                 customerId:'',
-                buildingNo:'',
-                street:'',
-                area:'',
-                district:'',
-                pincode:'',
+                address:{
+                  buildingNo:'',
+                  street:'',
+                  area:'',
+                  district:'',
+                  pincode:'',
+                },
                 email:''
             }
         }
@@ -141,10 +154,10 @@
         async read(){
             await api.get(this.link+'/hotel/read')
             .then((res)=>{
-                this.info=res.data,console.log(res)
+                this.info=res.data,console.log(res.data)
             })
         },
-
+      
         async create() {
             this.flag=true 
             this.dialog=true
@@ -188,12 +201,7 @@
         .then((res)=>{this.info=res.data})
       },
 
-      async asc(val,item){
-        await api.post(this.link+val,item)
-        .then((res)=>{this.info=res.data})
-      },
-
-      async desc(val,item){
+      async sort(val,item){
         await api.post(this.link+val,item)
         .then((res)=>{this.info=res.data})
       },

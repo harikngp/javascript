@@ -1,7 +1,7 @@
 <template>
   <v-app>
       <SearchBar @search="searching"/>
-      <v-form required>
+      <v-form>
 
 <v-dialog v-model="dialog" width="750"> 
 
@@ -53,14 +53,16 @@
           <thead>
               <tr>
                   <th>ID
-                      <button @click="asc('/customer/asc',{item:'id'})"><v-icon small>mdi-arrow-up</v-icon></button>
-                      <button @click="desc('/customer/desc',{item:'id'})"><v-icon small>mdi-arrow-down</v-icon></button>
+                      <button @click="sort('/customer/asc',{item:'customers.id'})"><v-icon small>mdi-arrow-up</v-icon></button>
+                      <button @click="sort('/customer/desc',{item:'id'})"><v-icon small>mdi-arrow-down</v-icon></button>
                   </th>
                   <th>Name
-                      <button @click="asc('/customer/asc',{item:'name'})"><v-icon small>mdi-arrow-up</v-icon></button>
-                      <button @click="desc('/customer/desc',{item:'name'})"><v-icon small>mdi-arrow-down</v-icon></button>
+                      <button @click="sort('/customer/asc',{item:'customers.name'})"><v-icon small>mdi-arrow-up</v-icon></button>
+                      <button @click="sort('/customer/desc',{item:'name'})"><v-icon small>mdi-arrow-down</v-icon></button>
                   </th>
                   <th>No. of branch</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
               </tr>
           </thead>
           <tbody>
@@ -89,7 +91,6 @@ export default {
           customer:{
               id:'',
               name:'',
-              branch:'',
           },
           ruleId: [
             id=>!!id|| 'required',
@@ -151,12 +152,7 @@ export default {
       .then((res)=>{this.info=res.data})
     },
 
-    async asc(val,item){
-      await api.post(this.link+val,item)
-      .then((res)=>{this.info=res.data})
-    },
-
-    async desc(val,item){
+    async sort(val,item){
       await api.post(this.link+val,item)
       .then((res)=>{this.info=res.data})
     },

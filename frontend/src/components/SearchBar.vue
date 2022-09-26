@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-text-field v-model="search" label="Search" @keyup="searchbar">
+        <v-text-field v-model="search" :rules="v=>v.length>0 || 'required'" label="Search" @keyup="searchBar">
             Search
         </v-text-field>
     </div>
@@ -21,7 +21,7 @@
         },
 
         methods:{
-            searchbar(){
+            searchBar(){
                 this.$emit('search',{search:this.search})
             }
         },

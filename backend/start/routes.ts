@@ -28,7 +28,7 @@ Route.group(()=>{
   Route.post('/search','HotelsController.search')
   Route.post('/desc','HotelsController.desc')
   Route.post('/asc','HotelsController.asc')
-}).prefix('/hotel')
+}).prefix('/hotel').middleware('mid')
 
 Route.group(()=>{
   Route.post('/create','CustomersController.create')
@@ -38,4 +38,4 @@ Route.group(()=>{
   Route.post('/search','CustomersController.search')
   Route.post('/desc','CustomersController.desc')
   Route.post('/asc','CustomersController.asc')
-}).prefix('/customer')
+}).prefix('/customer').middleware('mid')
